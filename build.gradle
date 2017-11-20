@@ -1,6 +1,7 @@
 version '1.0'
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 
@@ -14,4 +15,41 @@ dependencies {
     compile 'org.projectlombok:lombok:1.16.18'
     compile group: 'org.glassfish', name: 'javax.el', version: '3.0.1-b08'
     compile 'com.google.code.gson:gson:2.8.2'
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    def coverageSourceDirs = [
+            'src/main/java',
+    ]
+    executionData = fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+    classDirectories = fileTree(dir: "${project.buildDir}/classes/java/main")
+    sourceDirectories = files(coverageSourceDirs)
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled true
+        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        html.enabled false
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.task(test)
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
 }
