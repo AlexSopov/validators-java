@@ -20,9 +20,4 @@ public class MafiaPlayer {
 
     @Getter @Setter @Valid
     private MafiaPlayerMetadata mafiaPlayerMetadata;
-
-    @Override
-    public String toString() {
-        return nick + "[" + mafiaPlayerMetadata.firstName + " " + mafiaPlayerMetadata.secondName + "]";
-    }
 }
